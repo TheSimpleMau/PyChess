@@ -14,6 +14,7 @@ class Board(Tk):
         self.board.pack(fill="both",expand=1)
         self.name_images = listdir("./imgs")
         self.name_images = self.name_images[0:2] + self.name_images[3:]
+        self.initial_images_position = []
         self.images = []
         for i in self.name_images:
             if i[0] != '.':
@@ -22,11 +23,9 @@ class Board(Tk):
         # self.img = self.img.convert("P")
         # print(self.img.mode)
         # self.img = ImageTk.PhotoImage(self.img)
-        self.x_click = None
-        self.y_click = None
         self.squares()
         self.pieces()
-        self.bind("<Button 1>",self.move)
+        # self.bind("<Button 1>",self.move)
 
     def squares(self):
         '''
@@ -90,16 +89,10 @@ class Board(Tk):
                 continue
             for piece in all_pieces:
                 if letter == piece[0]:
+                    self.initial_images_position.append([piece[0],[x,y],piece[1]])
                     self.board.create_image(x,y,image=self.images[piece[1]])
                     x+=100
                     break
-    
-    def getClickOrigin(self,eventOrigin):
-        self.x_click = eventOrigin.x
-        self.y_click = eventOrigin.y
-
-    def move(self,event):
-        self.getClickOrigin(event)
 
         # x = 50
         # y = 50
@@ -113,4 +106,5 @@ class Board(Tk):
 
 if __name__ == '__main__':
     app = Board()
+    print(app.initial_images_position)
     app.mainloop()
