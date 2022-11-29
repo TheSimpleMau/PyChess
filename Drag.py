@@ -265,7 +265,7 @@ class Drag(Board):
 
     def legalMoves(self,event):
         '''
-        This function show us the legal moves that could move the piece
+        This function show us the legal moves
         '''
         piece = self.getPieceToMove(event)
         currentPosition = piece[1]
