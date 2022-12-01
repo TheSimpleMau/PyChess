@@ -39,10 +39,6 @@ class Board(Tk):
                     self.board.create_rectangle(x*100,y*100,(x+1)*100,(y+1)*100,fill="gray")
 
 
-    def FENreader(self,notation):
-        pass
-
-
     def pieces(self) -> None:
         '''
         This function places the pieces on the board
