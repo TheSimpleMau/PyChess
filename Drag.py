@@ -296,7 +296,6 @@ class Drag(Board):
                                     self.board.create_image(nextPosition[0],nextPosition[1],image=self.images[enemyPiece[2]])
             if len(moves[1]) != 0:
                 for y in moves[1]:
-                    notLegalMove = False
                     if currentY+y < 800 and currentY+y > 0:
                         rectangleX = self.getCenter(currentX)-50
                         rectangleY = self.getCenter(currentY)-50
@@ -315,7 +314,15 @@ class Drag(Board):
                         else:
                             if notLegalMove[0] == 0:
                                 if notLegalMove[1] == 0:
-                                    self.board.create_rectangle(rectangleX,rectangleY-100,rectangleX+100,rectangleY,fill="#476042")
+                                    if pieceName.lower() != "p":
+                                        self.board.create_rectangle(rectangleX,rectangleY-100,rectangleX+100,rectangleY,fill="#476042")
+                                    else:
+                                        self.board.create_rectangle(rectangleX,rectangleY-100,rectangleX+100,rectangleY,fill="#476042")
+                                        for position in self.initial_images_position:
+                                            if position[1] == currentPosition:
+                                                self.board.create_rectangle(rectangleX,rectangleY-200,rectangleX+100,rectangleY-100,fill="#476042")
+                                                break
+                                        
                                 else:
                                     if pieceName.lower() != "p":
                                         self.board.create_rectangle(rectangleX,rectangleY-100,rectangleX+100,rectangleY,fill="red")
@@ -324,7 +331,6 @@ class Drag(Board):
                                         self.board.create_image(nextPosition[0],nextPosition[1],image=self.images[enemyPiece[2]])
             if len(moves[2]) != 0:
                 for x,y in moves[2]:
-                    notLegalMove = False
                     if currentX+x<800 and currentY+y<800:
                         rectangleX = self.getCenter(currentX)-50
                         rectangleY = self.getCenter(currentY)-50
@@ -337,7 +343,8 @@ class Drag(Board):
                                 self.enemyPieces.append(enemyPiece)
                                 self.board.create_image(nextPosition[0],nextPosition[1],image=self.images[enemyPiece[2]])
                             else:
-                                self.board.create_rectangle(rectangleX+x,rectangleY+y,rectangleX+x+100,rectangleY+y+100,fill="#476042")
+                                if pieceName.lower() != "p":
+                                    self.board.create_rectangle(rectangleX+x,rectangleY+y,rectangleX+x+100,rectangleY+y+100,fill="#476042")
 
 
 
@@ -347,9 +354,10 @@ class Drag(Board):
         '''
         self.reloadBoard()
         piece = self.getPieceToMove(event)
-        self.pieceToMove = piece
+        self.pieceToMove = self.getPieceToMove(event)
         if piece == None:
-            return "No piece to move"
+            print("No piece to move on legal moves")
+            return None
         currentPosition = piece[1]
         if piece[0].lower() not in "nkp":
             if piece[0].lower() == "r":
@@ -364,7 +372,7 @@ class Drag(Board):
             elif piece[0].lower() == "k":
                 self.displayMoves(currentPosition,self.King,False,piece[0])
             else: #special case, pawn
-                if piece[0] == "P":
+                if piece[0].isupper():
                     self.Pawn = [ [], [-100], [[-100,-100],[100,-100]] ]
                 else:
                     self.Pawn = [ [], [100], [[-100,100],[100,100]] ]
@@ -374,23 +382,28 @@ class Drag(Board):
     def movePiece(self,event):
         squareClicked = self.getSquareColor(event)
         positionClickedCenter = [self.getCenter(event.x),self.getCenter(event.y)]
+        # print(squareClicked)
         if squareClicked[0] != 77:
-            return None
+            if len(self.enemyPieces) != 0:
+                pass
+            else:
+                return None
         if self.pieceToMove == None:
-            print("No piece to move")
+            print("No piece to move on move to piece")
             return None
-        # actualXPosition = self.pieceToMove[1][0]
-        # actualYPosition = self.pieceToMove[1][1]
         for enemyPiece in self.enemyPieces:
             if positionClickedCenter == enemyPiece[1]:
-                self.newPositions.pop(enemyPiece[2])
-                self.legalMoves(event)
+                for idx,pieceToDelete in enumerate(self.newPositions):
+                    if pieceToDelete == enemyPiece:
+                        break
+                self.newPositions.pop(idx)
+                # self.newPositions.pop(enemyPiece[2])
+                # self.legalMoves(event)
                 break
         newPosition = [self.pieceToMove[0],positionClickedCenter,self.pieceToMove[2]]
         for idx,piece in enumerate(self.newPositions):
             if newPosition[0] == piece[0] and self.pieceToMove[1] == piece[1]:
                 break
-        # print("\n",len(self.newPositions))
         self.newPositions.pop(idx)
         self.newPositions.append(newPosition)
         self.reloadBoard()
